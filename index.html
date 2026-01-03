@@ -181,13 +181,21 @@ header .subtitle{
 </head>
 
 <body>
+  <script>
+function hashPin(pin){
+  return btoa(pin); // cukup untuk invalidasi
+}
+</script>
+
 <script>
-const ACCESS_PIN = "321";
-const LOGIN_KEY  = "parkir_login_ok";
+const ACCESS_PIN = "111"; //GANTI PIN
+const LOGIN_KEY  = "parkir_login_hash";
 const TRY_KEY    = "parkir_pin_try";
 
+const CURRENT_PIN_HASH = hashPin(ACCESS_PIN);
+
 document.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem(LOGIN_KEY) === "1") {
+  if (localStorage.getItem(LOGIN_KEY) === CURRENT_PIN_HASH) {
     showApp();
   } else {
     askPin();
@@ -201,7 +209,7 @@ function askPin(){
   const pin = input.trim();
 
   if (pin === ACCESS_PIN) {
-    localStorage.setItem(LOGIN_KEY, "1");
+    localStorage.setItem(LOGIN_KEY, CURRENT_PIN_HASH);
     localStorage.removeItem(TRY_KEY);
     showApp();
     return;
@@ -211,25 +219,27 @@ function askPin(){
   tries++;
   localStorage.setItem(TRY_KEY, tries);
 
-  let msg = "PIN ANDA SALAH COBA LAGI";
-  if (tries === 2) msg = "PIN SALAH 😊";
+  let msg = "pin anda salah 😇";
+  if (tries === 2) msg = "masih salah☺️";
   else if (tries === 3) msg = "PIN SALAH 🙂";
   else if (tries === 4) msg = "PIN MASIH SALAH ☹️";
   else if (tries === 5) msg = "BISA NULIS G SIH! 😒";
   else if (tries === 6) msg = "TANYA ORANG COBA 🫩";
   else if (tries === 7) msg = "UDAH NANYA BELUM ? 😑";
-  else if (tries === 8) msg = "BISA GAKK !! 😡";
+  else if (tries === 8) msg = "BISA GAKK !! ";
   else if (tries === 9) msg = "NYERAH AJA G SIH";
   else if (tries >= 10) msg = "😑";
 
+
   alert(msg);
-  askPin(); // ulangi TANPA reload
+  askPin();
 }
 
 function showApp(){
   document.getElementById("app").style.display = "block";
 }
 </script>
+
 
 
 
@@ -322,7 +332,7 @@ function simpan(){
 }
 
 function resetData(){
-  if(!confirm("Yakin ingin reset SEMUA data parkir? Data tidak bisa dikembalikan.")){
+  if(!confirm("Yakin ingin reset SEMUA data parkir 🥺 ")){
     return;
   }
 
