@@ -235,7 +235,9 @@ if (localStorage.getItem(LOGIN_KEY) === ACCESS_PIN) {
 }
 </script>
 
-<div class="header">
+<div id="app" style="display:none">
+
+  <div class="header">
   <h1>Survey Parkir</h1>
   <div class="subtitle">Kelas E</div>
 </div>
@@ -408,6 +410,8 @@ const selesaiEl = document.getElementById("selesai");
 
 render();
 </script>
+  </div> <!-- end #app -->
+
 <div class="app-credit">
   app created by N4yr4
 </div>
