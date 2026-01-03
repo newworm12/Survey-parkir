@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Survey Parkir</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --bg:#1c1c1c;
+  --card:#ffffff;
+  --text:#ffffff;
+  --muted:#bdbdbd;
+  --accent:#ff7a18;
+  --danger:#e53935;
+  --radius:14px;
+}
+
+body{
+  margin:0;
+  padding:16px;
+  font-family:system-ui, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+h1,h3{
+  margin:0 0 10px;
+}
+
+.card{
+  background:var(--card);
+  color:#111;
+  padding:14px;
+  border-radius:var(--radius);
+  margin-bottom:16px;
+}
+
+label{
+  display:block;
+  font-size:13px;
+  color:#444;
+  margin-top:10px;
+}
+
+input, select{
+  width:100%;
+  height:44px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  padding:0 12px;
+  font-size:15px;
+}
+
+button{
+  width:100%;
+  height:48px;
+  margin-top:12px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.btn-primary{
+  background:var(--accent);
+  color:#fff;
+}
+
+.btn-out{
+  background:var(--danger);
+  color:#fff;
+  height:36px;
+  font-size:14px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+th,td{
+  border-bottom:1px solid #ddd;
+  padding:6px;
+  text-align:center;
+}
+
+th{
+  background:#f3f3f3;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Survey Parkir</h1>
+
+<div class="card">
+  <label>Jenis Kendaraan</label>
+  <select id="jenis">
+  <option value="SM">SM – Sepeda Motor</option>
+  <option value="MP">MP – Mobil Penumpang</option>
+  <option value="KB">KB – Kendaraan Besar</option>
+  <option value="KTB">KTB – Kendaraan Tidak Bermotor</option>
+</select>
+
+
+  <label>Ciri-ciri Kendaraan (opsional)</label>
+  <input id="plat" placeholder="warna, tipe, muatan, dll">
+
+  <button class="btn-primary" onclick="parkirMasuk()">➕ Masuk Parkir</button>
+  <button class="btn-out" onclick="resetData()">⟲ Reset Data</button>
+
+</div>
+
+<div class="card">
+  <h3>Sedang Parkir</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Jenis</th>
+        <th>Masuk</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="aktif"></tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Selesai Parkir</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Jenis</th>
+        <th>Masuk</th>
+        <th>Keluar</th>
+        <th>Menit</th>
+      </tr>
+    </thead>
+    <tbody id="selesai"></tbody>
+  </table>
+</div>
+
+
+<script>
+let aktif = JSON.parse(localStorage.getItem("parkirAktif")) || [];
+let selesai = JSON.parse(localStorage.getItem("parkirSelesai")) || [];
+let idCounter = Number(localStorage.getItem("parkirID")) || 1;
+
+function waktu(){
+  return new Date().toLocaleTimeString("id-ID");
+}
+
+function simpan(){
+  localStorage.setItem("parkirAktif", JSON.stringify(aktif));
+  localStorage.setItem("parkirSelesai", JSON.stringify(selesai));
+  localStorage.setItem("parkirID", idCounter);
+}
+
+function resetData(){
+  if(!confirm("Yakin ingin reset SEMUA data parkir? Data tidak bisa dikembalikan.")){
+    return;
+  }
+
+  aktif = [];
+  selesai = [];
+  idCounter = 1;
+
+  localStorage.removeItem("parkirAktif");
+  localStorage.removeItem("parkirSelesai");
+  localStorage.removeItem("parkirID");
+
+  render();
+}
+
+function parkirMasuk(){
+  aktif.push({
+    id: idCounter++,
+    jenis: jenis.value,
+    plat: plat.value,
+    masuk: new Date()
+  });
+  plat.value="";
+  simpan();
+  render();
+}
+
+function parkirKeluar(id){
+  let i = aktif.findIndex(x=>x.id===id);
+  let data = aktif.splice(i,1)[0];
+  let keluar = new Date();
+  let durasi = Math.round((keluar - data.masuk)/60000);
+  selesai.push({...data, keluar, durasi});
+  simpan();
+  render();
+}
+
+function render(){
+  aktifEl.innerHTML="";
+  selesaiEl.innerHTML="";
+
+  aktif.forEach(d=>{
+    aktifEl.innerHTML += `
+      <tr>
+        <td>${d.id}</td>
+        <td>${d.jenis}</td>
+        <td>${d.plat||"-"}</td>
+        <td>${new Date(d.masuk).toLocaleTimeString("id-ID")
+}</td>
+        <td><button class="btn-out" onclick="parkirKeluar(${d.id})">Keluar</button></td>
+      </tr>`;
+  });
+
+  selesai.forEach(d=>{
+    selesaiEl.innerHTML += `
+      <tr>
+        <td>${d.id}</td>
+        <td>${d.jenis}</td>
+        <td>${d.plat||"-"}</td>
+        <td>${new Date(d.masuk).toLocaleTimeString("id-ID")}</td>
+        <td>${new Date(d.keluar).toLocaleTimeString("id-ID")}</td>
+        <td>${d.durasi}</td>
+      </tr>`;
+  });
+}
+
+const aktifEl = document.getElementById("aktif");
+const selesaiEl = document.getElementById("selesai");
+
+render();
+</script>
+
+</body>
+</html>
