@@ -183,56 +183,53 @@ header .subtitle{
 <body>
 <script>
 const ACCESS_PIN = "67";
-const LOGIN_KEY  = "traffic_login_pin";
-const TRY_KEY    = "traffic_pin_try";
+const LOGIN_KEY  = "parkir_login_ok";
+const TRY_KEY    = "parkir_pin_try";
 
-// reset login jika PIN berubah
-if (localStorage.getItem(LOGIN_KEY) !== ACCESS_PIN) {
-  localStorage.removeItem(LOGIN_KEY);
-  localStorage.removeItem(TRY_KEY);
-}
+document.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem(LOGIN_KEY) === "1") {
+    showApp();
+  } else {
+    askPin();
+  }
+});
 
-// fungsi login
-function checkLogin(){
-  let tries = Number(localStorage.getItem(TRY_KEY)) || 0;
-  let input = prompt("Masukkan PIN Akses");
+function askPin(){
+  const input = prompt("Masukkan PIN Akses");
+  if (input === null) return; // user cancel
 
-  input = String(input || "").trim();
+  const pin = input.trim();
 
-  const isValid =
-    input.length === ACCESS_PIN.length &&
-    /^\d+$/.test(input) &&
-    input === ACCESS_PIN;
-
-  if (isValid) {
-    localStorage.setItem(LOGIN_KEY, ACCESS_PIN);
+  if (pin === ACCESS_PIN) {
+    localStorage.setItem(LOGIN_KEY, "1");
     localStorage.removeItem(TRY_KEY);
-    document.getElementById("app").style.display = "block";
+    showApp();
     return;
   }
 
+  let tries = Number(localStorage.getItem(TRY_KEY)) || 0;
   tries++;
   localStorage.setItem(TRY_KEY, tries);
 
   let msg = "PIN ANDA SALAH COBA LAGI";
-  if (tries === 2) msg = "PIN SALAH";
-  if (tries === 3) msg = "PIN SALAH KOCAK";
-  if (tries === 4) msg = "PIN MASIH SALAH WOY";
-  if (tries === 5) msg = "BISA NULIS G SIH!";
-  if (tries >= 6) msg = "😑";
+   if (tries === 2) msg = "PIN SALAH 😊";
+   if (tries === 3) msg = "PIN SALAHHHH 🙂 ";
+   if (tries === 4) msg = "PIN MASIH SALAH ☹️ ";
+   if (tries === 5) msg = "BISA NULIS G SIH! 😒";
+   if (tries === 6) msg = "TANYA ORANG COBA 🫩";
+   if (tries === 7) msg = "UDAH NANYA BELUM ? 😑";
+   if (tries === 8) msg = "BISA GAKK !!😡 ";
+   if (tries === 9) msg = "tolol";
+   if (tries ===10) msg = "😐";
+   if (tries ===10) msg = "nyerah aja g si";
+   if (tries >= 11) msg = "😑";
 
-  alert(msg);
-  location.reload();
+   alert(msg);
 }
 
-// jika sudah login
-document.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem(LOGIN_KEY) === ACCESS_PIN) {
-    document.getElementById("app").style.display = "block";
-  } else {
-    checkLogin();
-  }
-});
+function showApp(){
+  document.getElementById("app").style.display = "block";
+}
 </script>
 
 
