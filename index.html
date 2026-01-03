@@ -31,10 +31,12 @@ h1,h3{
 .card{
   background:var(--card);
   color:#111;
-  padding:14px;
-  border-radius:var(--radius);
+  padding:16px;
+  border-radius:16px;
   margin-bottom:16px;
 }
+
+
 
 label{
   display:block;
@@ -43,14 +45,19 @@ label{
   margin-top:10px;
 }
 
-input, select{
+input,
+select{
+  display:block;
   width:100%;
+  max-width:100%;
   height:44px;
-  border-radius:10px;
-  border:1px solid #ccc;
   padding:0 12px;
+  border-radius:12px;
+  border:1px solid #d0d0d0;
   font-size:15px;
+  background:#f5f5f5;
 }
+
 
 button{
   width:100%;
@@ -109,9 +116,11 @@ th{
 
 /* kecilkan tombol agar tidak “nabrak” */
 button{
+  width:100%;
   height:44px;
-  font-size:15px;
+  border-radius:12px;
 }
+
 
 /* pisahkan tombol */
 .card button + button{
