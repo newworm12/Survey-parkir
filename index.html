@@ -182,21 +182,9 @@ header .subtitle{
 
 <body>
 <script>
-const ACCESS_PIN = "67";
-const LOGIN_KEY  = "parkir_login_ok";
-const TRY_KEY    = "parkir_pin_try";
-
-document.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem(LOGIN_KEY) === "1") {
-    showApp();
-  } else {
-    askPin();
-  }
-});
-
 function askPin(){
   const input = prompt("Masukkan PIN Akses");
-  if (input === null) return; // user cancel
+  if (input === null) return;
 
   const pin = input.trim();
 
@@ -212,25 +200,24 @@ function askPin(){
   localStorage.setItem(TRY_KEY, tries);
 
   let msg = "PIN ANDA SALAH COBA LAGI";
-   if (tries === 2) msg = "PIN SALAH 😊";
-   if (tries === 3) msg = "PIN SALAHHHH 🙂 ";
-   if (tries === 4) msg = "PIN MASIH SALAH ☹️ ";
-   if (tries === 5) msg = "BISA NULIS G SIH! 😒";
-   if (tries === 6) msg = "TANYA ORANG COBA 🫩";
-   if (tries === 7) msg = "UDAH NANYA BELUM ? 😑";
-   if (tries === 8) msg = "BISA GAKK !!😡 ";
-   if (tries === 9) msg = "tolol";
-   if (tries ===10) msg = "😐";
-   if (tries ===10) msg = "nyerah aja g si";
-   if (tries >= 11) msg = "😑";
+  if (tries === 2) msg = "pin anda salah 😊";
+  else if (tries === 3) msg = "PIN SALAH 🙂";
+  else if (tries === 4) msg = "PIN MASIH SALAH ☹️";
+  else if (tries === 5) msg = "BISA NULIS G SIH! 😒";
+  else if (tries === 6) msg = "TANYA ORANG COBA 🫩";
+  else if (tries === 7) msg = "UDAH NANYA BELUM ? 😑";
+  else if (tries === 8) msg = "BISA GAKK !! 😡";
+  else if (tries === 9) msg = "😐";
+  else if (tries === 9) msg = "NYERAH AJA G SIH";
+  else if (tries >= 10) msg = "😑";
 
-   alert(msg);
-}
+  alert(msg);
 
-function showApp(){
-  document.getElementById("app").style.display = "block";
+  // 🔑 INI YANG KURANG
+  askPin();
 }
 </script>
+
 
 
 <div id="app" style="display:none">
