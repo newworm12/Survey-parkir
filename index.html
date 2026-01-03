@@ -181,7 +181,60 @@ header .subtitle{
 </head>
 
 <body>
-  
+<script>
+const ACCESS_PIN = "67";
+const LOGIN_KEY  = "traffic_login_pin";
+const TRY_KEY    = "traffic_pin_try";
+
+// reset login jika PIN berubah
+if (localStorage.getItem(LOGIN_KEY) !== ACCESS_PIN) {
+  localStorage.removeItem(LOGIN_KEY);
+  localStorage.removeItem(TRY_KEY);
+}
+
+// jika sudah login
+if (localStorage.getItem(LOGIN_KEY) === ACCESS_PIN) {
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("app").style.display = "block";
+  });
+} else {
+
+  let tries = Number(localStorage.getItem(TRY_KEY)) || 0;
+
+  while (true) {
+    let input = prompt("Masukkan PIN Akses");
+    input = String(input || "").trim();
+
+    const isValid =
+      input.length === ACCESS_PIN.length &&
+      /^\d+$/.test(input) &&
+      input === ACCESS_PIN;
+
+    if (isValid) {
+      localStorage.setItem(LOGIN_KEY, ACCESS_PIN);
+      localStorage.removeItem(TRY_KEY);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("app").style.display = "block";
+      });
+      break;
+    }
+
+    tries++;
+    localStorage.setItem(TRY_KEY, tries);
+
+    let msg = "PIN ANDA SALAH COBA LAGI";
+    if (tries === 2) msg = "PIN SALAH";
+    if (tries === 3) msg = "PIN SALAH KOCAK";
+    if (tries === 4) msg = "PIN MASIH SALAH WOY";
+    if (tries === 5) msg = "BISA NULIS G SIH!";
+    if (tries >= 6) msg = "😑";
+
+    alert(msg);
+  }
+}
+</script>
+
 <div class="header">
   <h1>Survey Parkir</h1>
   <div class="subtitle">Kelas E</div>
