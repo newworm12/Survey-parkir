@@ -192,48 +192,49 @@ if (localStorage.getItem(LOGIN_KEY) !== ACCESS_PIN) {
   localStorage.removeItem(TRY_KEY);
 }
 
-// jika sudah login
-if (localStorage.getItem(LOGIN_KEY) === ACCESS_PIN) {
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("app").style.display = "block";
-  });
-} else {
-
+// fungsi login
+function checkLogin(){
   let tries = Number(localStorage.getItem(TRY_KEY)) || 0;
+  let input = prompt("Masukkan PIN Akses");
 
-  while (true) {
-    let input = prompt("Masukkan PIN Akses");
-    input = String(input || "").trim();
+  input = String(input || "").trim();
 
-    const isValid =
-      input.length === ACCESS_PIN.length &&
-      /^\d+$/.test(input) &&
-      input === ACCESS_PIN;
+  const isValid =
+    input.length === ACCESS_PIN.length &&
+    /^\d+$/.test(input) &&
+    input === ACCESS_PIN;
 
-    if (isValid) {
-      localStorage.setItem(LOGIN_KEY, ACCESS_PIN);
-      localStorage.removeItem(TRY_KEY);
-
-      document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("app").style.display = "block";
-      });
-      break;
-    }
-
-    tries++;
-    localStorage.setItem(TRY_KEY, tries);
-
-    let msg = "PIN ANDA SALAH COBA LAGI";
-    if (tries === 2) msg = "PIN SALAH";
-    if (tries === 3) msg = "PIN SALAH KOCAK";
-    if (tries === 4) msg = "PIN MASIH SALAH WOY";
-    if (tries === 5) msg = "BISA NULIS G SIH!";
-    if (tries >= 6) msg = "😑";
-
-    alert(msg);
+  if (isValid) {
+    localStorage.setItem(LOGIN_KEY, ACCESS_PIN);
+    localStorage.removeItem(TRY_KEY);
+    document.getElementById("app").style.display = "block";
+    return;
   }
+
+  tries++;
+  localStorage.setItem(TRY_KEY, tries);
+
+  let msg = "PIN ANDA SALAH COBA LAGI";
+  if (tries === 2) msg = "PIN SALAH";
+  if (tries === 3) msg = "PIN SALAH KOCAK";
+  if (tries === 4) msg = "PIN MASIH SALAH WOY";
+  if (tries === 5) msg = "BISA NULIS G SIH!";
+  if (tries >= 6) msg = "😑";
+
+  alert(msg);
+  location.reload();
 }
+
+// jika sudah login
+document.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem(LOGIN_KEY) === ACCESS_PIN) {
+    document.getElementById("app").style.display = "block";
+  } else {
+    checkLogin();
+  }
+});
 </script>
+
 
 <div id="app" style="display:none">
 
