@@ -71,9 +71,10 @@ button{
 .btn-out{
   background:var(--danger);
   color:#fff;
-  height:36px;
+  height:40px;
   font-size:14px;
 }
+
 
 table{
   width:100%;
@@ -90,20 +91,67 @@ th,td{
 th{
   background:#f3f3f3;
 }
+.header{
+  margin-bottom:16px;
+}
+
+.header h1{
+  font-size:22px;
+  font-weight:700;
+  margin:0;
+  color:#fff;
+}
+
+/* rapikan card form */
+.card + .card{
+  margin-top:12px;
+}
+
+/* kecilkan tombol agar tidak “nabrak” */
+button{
+  height:44px;
+  font-size:15px;
+}
+
+/* pisahkan tombol */
+.card button + button{
+  margin-top:8px;
+}
+
+/* section title */
+.section-title{
+  margin:20px 0 8px;
+  font-size:18px;
+  font-weight:600;
+  color:#fff;
+}
+
+/* tabel mobile friendly */
+table{
+  font-size:12px;
+}
+
+th, td{
+  padding:8px 4px;
+}
+
+/* biar tabel tidak terlalu mepet */
+.card table{
+  margin-top:6px;
+}
+
 </style>
 
 </head>
 
 <body>
   
+<div class="header">
+  <h1>Survey Parkir</h1>
+</div>
 <div class="card">
-  <label>Nama Surveyor</label>
+    <label>Nama Surveyor</label>
   <input id="surveyor" placeholder="Nama surveyor">
-
-  
-<h1>Survey Parkir</h1>
-
-<div class="card">
   <label>Jenis Kendaraan</label>
   <select id="jenis">
   <option value="SM">SM – Sepeda Motor</option>
@@ -119,10 +167,12 @@ th{
   <button class="btn-primary" onclick="parkirMasuk()">➕ Masuk Parkir</button>
   <button class="btn-out" onclick="resetData()">⟲ Reset Data</button>
 
+
 </div>
 
 <div class="card">
-  <h3>Sedang Parkir</h3>
+  <div class="section-title">Sedang Parkir</div>
+
   <table>
     <thead>
       <tr>
@@ -137,7 +187,8 @@ th{
 </div>
 
 <div class="card">
-  <h3>Selesai Parkir</h3>
+  <div class="section-title">Selesai Parkir</div>
+
   <table>
     <thead>
       <tr>
@@ -159,6 +210,15 @@ const SHEET_URL = "https://script.google.com/macros/s/AKfycbxxmuULGgzuR7J-1hQ1FJ
 let aktif = JSON.parse(localStorage.getItem("parkirAktif")) || [];
 let selesai = JSON.parse(localStorage.getItem("parkirSelesai")) || [];
 let idCounter = Number(localStorage.getItem("parkirID")) || 1;
+const surveyorInput = document.getElementById("surveyor");
+
+// load saat buka
+surveyorInput.value = localStorage.getItem("namaSurveyor") || "";
+
+// simpan saat diketik
+surveyorInput.addEventListener("input", () => {
+  localStorage.setItem("namaSurveyor", surveyorInput.value);
+});
 
 function waktu(){
   return new Date().toLocaleTimeString("id-ID");
