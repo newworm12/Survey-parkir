@@ -264,7 +264,8 @@ const LOGIN_KEY  = "parkir_login_hash";
 const TRY_KEY    = "parkir_pin_try";
 
 const CURRENT_PIN_HASH = hashPin(ACCESS_PIN);
-
+const ARUS_MASUK_KEY  = "arusMasuk";
+const ARUS_KELUAR_KEY = "arusKeluar";
   let pressTimer = null;
 let isLongPress = false;
 const LONG_PRESS_MS = 800;
@@ -323,6 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
     () => tambahArus("KELUAR", +1),
     () => tambahArus("KELUAR", -1)
   );
+  updateArusText();
 });
 
 function tambahArus(arah, nilai){
@@ -335,13 +337,11 @@ function tambahArus(arah, nilai){
   }
 
   updateArusText();
+  simpanArus();
 
-  // kirim ke sheet
-  kirimArus(
-    arah,
-    nilai > 0 ? "ADD" : "CANCEL"
-  );
+  kirimArus(arah, nilai > 0 ? "ADD" : "CANCEL");
 }
+
 
 function askPin(){
   const input = prompt("Masukkan PIN Akses");
@@ -493,21 +493,16 @@ function showApp(){
 
 
 <script>
-let arusMasukCounter = {
-  SM: 0,
-  MP: 0,
-  KB: 0,
-  KTB: 0,
-  PK: 0
-};
+let arusMasukCounter =
+  JSON.parse(localStorage.getItem(ARUS_MASUK_KEY)) || {
+    SM: 0, MP: 0, KB: 0, KTB: 0, PK: 0
+  };
 
-let arusKeluarCounter = {
-  SM: 0,
-  MP: 0,
-  KB: 0,
-  KTB: 0,
-  PK: 0
-};
+let arusKeluarCounter =
+  JSON.parse(localStorage.getItem(ARUS_KELUAR_KEY)) || {
+    SM: 0, MP: 0, KB: 0, KTB: 0, PK: 0
+  };
+
 
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbxxmuULGgzuR7J-1hQ1FJLMuQPdGvmuMe5r5uPmxKI1XTW8hKAZmnnWmfbqs3-x56wY/exec";
 
@@ -534,9 +529,16 @@ function simpan(){
   localStorage.setItem("parkirID", idCounter);
 }
 function resetArus(){
-  arusMasukCounter = { SM:0, MP:0, KB:0, KTB:0 };
-  arusKeluarCounter = { SM:0, MP:0, KB:0, KTB:0 };
+  arusMasukCounter  = { SM:0, MP:0, KB:0, KTB:0, PK:0 };
+  arusKeluarCounter = { SM:0, MP:0, KB:0, KTB:0, PK:0 };
+
+  simpanArus();
   updateArusText();
+}
+
+function simpanArus(){
+  localStorage.setItem(ARUS_MASUK_KEY, JSON.stringify(arusMasukCounter));
+  localStorage.setItem(ARUS_KELUAR_KEY, JSON.stringify(arusKeluarCounter));
 }
 
 function resetData(){
@@ -552,6 +554,30 @@ function resetData(){
   localStorage.removeItem("parkirAktif");
   localStorage.removeItem("parkirSelesai");
   localStorage.removeItem("parkirID");
+
+  // reset arus
+  resetArus();
+
+  render();
+}
+
+
+  // reset parkir
+  aktif = [];
+  selesai = [];
+  idCounter = 1;
+
+  localStorage.removeItem("parkirAktif");
+  localStorage.removeItem("parkirSelesai");
+  localStorage.removeItem("parkirID");
+  arusMasukCounter  = { SM:0, MP:0, KB:0, KTB:0, PK:0 };
+  arusKeluarCounter = { SM:0, MP:0, KB:0, KTB:0, PK:0 };
+
+localStorage.removeItem(ARUS_MASUK_KEY);
+localStorage.removeItem(ARUS_KELUAR_KEY);
+
+updateArusText();
+
 
   // ⬇️ RESET ARUS JUGA
   resetArus();
