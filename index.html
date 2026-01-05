@@ -177,40 +177,44 @@ header .subtitle{
   margin-top:2px;
 }
 .flow-bar{
-  display:flex;
-  gap:8px;
-  padding:10px;
-  background:#1e1e1e;
+  display:grid;
+  grid-template-columns: 1fr auto auto;
+  gap:10px;
+  align-items:center;
+  padding:12px;
+  background:#141414;
   border-radius:14px;
-  margin-bottom:10px;
+  margin-bottom:8px;
 }
 
-.flow-select{
-  flex:1;
-}
-
+/* dropdown */
 .flow-select select{
-  background:#2e7d32;
+  background:#2b2b2b;
   color:#fff;
-  border:none;
+  border:1px solid #444;
   font-weight:600;
 }
 
+/* tombol arus */
 .flow-btn{
-  width:80px;
-  border:none;
+  height:42px;
+  padding:0 16px;
   border-radius:12px;
-  color:#fff;
+  font-size:14px;
   font-weight:700;
+  color:#fff;
 }
 
+/* MASUK = ORANGE */
 .flow-btn.masuk{
-  background:#6a1b9a;
+  background:#ff7a18;
 }
 
+/* KELUAR = MERAH GELAP */
 .flow-btn.keluar{
-  background:#4a148c;
+  background:#e53935;
 }
+
 
 .flow-result{
   display:flex;
@@ -337,12 +341,14 @@ function showApp(){
   <button class="flow-btn keluar" onclick="countKeluar()">KELUAR</button>
 </div>
 
-<div class="flow-result">
-  <div>SM: <span id="smCount">0</span></div>
-  <div>MP: <span id="mpCount">0</span></div>
-  <div>KB: <span id="kbCount">0</span></div>
-  <div>KTB: <span id="ktbCount">0</span></div>
+<div id="arusText" style="
+  font-size:12px;
+  color:#ccc;
+  padding:4px 6px 10px;
+">
+  SM 0 | MP 0 | KB 0 | KTB 0
 </div>
+
 
 <div class="card">
   <div class="section-title">Sedang Parkir</div>
@@ -525,10 +531,27 @@ function updateFlowUI(){
   ktbCount.textContent = flowCount.KTB;
   localStorage.setItem("flowCount", JSON.stringify(flowCount));
 }
+let arusCounter = {
+  SM: 0,
+  MP: 0,
+  KB: 0,
+  KTB: 0
+};
+
+function updateArusText(){
+  document.getElementById("arusText").innerText =
+    `SM ${arusCounter.SM} | MP ${arusCounter.MP} | KB ${arusCounter.KB} | KTB ${arusCounter.KTB}`;
+}
 
 function countMasuk(){
+  const jenis = document.getElementById("flowJenis").value;
+
+  arusCounter[jenis]++;
+  updateArusText();
+
   kirimArus(1, 0);
 }
+
 
 function countKeluar(){
   kirimArus(0, 1);
