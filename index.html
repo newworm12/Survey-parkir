@@ -265,6 +265,43 @@ const TRY_KEY    = "parkir_pin_try";
 
 const CURRENT_PIN_HASH = hashPin(ACCESS_PIN);
 
+  let pressTimer = null;
+let isLongPress = false;
+const LONG_PRESS_MS = 800;
+function setupLongPress(button, onClick, onLongPress){
+  button.addEventListener("mousedown", start);
+  button.addEventListener("touchstart", start);
+
+  button.addEventListener("mouseup", end);
+  button.addEventListener("mouseleave", end);
+  button.addEventListener("touchend", end);
+  button.addEventListener("touchcancel", end);
+
+  function start(e){
+    e.preventDefault();
+    isLongPress = false;
+
+    pressTimer = setTimeout(() => {
+      isLongPress = true;
+      onLongPress();
+      vibrate();
+    }, LONG_PRESS_MS);
+  }
+
+  function end(){
+    clearTimeout(pressTimer);
+    if (!isLongPress) {
+      onClick();
+    }
+  }
+}
+
+function vibrate(){
+  if (navigator.vibrate) {
+    navigator.vibrate(40);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem(LOGIN_KEY) === CURRENT_PIN_HASH) {
     showApp();
@@ -272,7 +309,38 @@ document.addEventListener("DOMContentLoaded", () => {
     askPin();
   }
 });
+document.addEventListener("DOMContentLoaded", () => {
+  const btnMasuk  = document.getElementById("btnMasuk");
+  const btnKeluar = document.getElementById("btnKeluar");
 
+  setupLongPress(
+    btnMasuk,
+    () => tambahArus("MASUK", +1),
+    () => tambahArus("MASUK", -1)
+  );
+
+  setupLongPress(
+    btnKeluar,
+    () => tambahArus("KELUAR", +1),
+    () => tambahArus("KELUAR", -1)
+  );
+});
+function tambahArus(arah, nilai){
+  const jenis = document.getElementById("flowJenis").value;
+
+  if (arah === "MASUK") {
+    arusMasukCounter[jenis] = Math.max(0, arusMasukCounter[jenis] + nilai);
+  } else {
+    arusKeluarCounter[jenis] = Math.max(0, arusKeluarCounter[jenis] + nilai);
+  }
+
+  updateArusText();
+
+  kirimArus(
+    arah === "MASUK" ? nilai : 0,
+    arah === "KELUAR" ? nilai : 0
+  );
+}
 function askPin(){
   const input = prompt("Masukkan PIN Akses");
   if (input === null) return;
@@ -285,6 +353,8 @@ function askPin(){
     showApp();
     return;
   }
+  
+
 
   let tries = Number(localStorage.getItem(TRY_KEY)) || 0;
   tries++;
@@ -357,8 +427,9 @@ function showApp(){
   </div>
 
   <div class="flow-actions">
-    <button class="flow-btn masuk" onclick="countMasuk()">MASUK</button>
-    <button class="flow-btn keluar" onclick="countKeluar()">KELUAR</button>
+    <button class="flow-btn masuk" id="btnMasuk">MASUK</button>
+    <button class="flow-btn keluar" id="btnKeluar">KELUAR</button>
+
   </div>
 </div>
 
@@ -565,24 +636,7 @@ function updateArusText(){
 }
 
 
-function countMasuk(){
-  const jenis = document.getElementById("flowJenis").value;
 
-  arusMasukCounter[jenis]++;
-  updateArusText();
-
-  kirimArus(1, 0);
-}
-
-
-function countKeluar(){
-  const jenis = document.getElementById("flowJenis").value;
-
-  arusKeluarCounter[jenis]++;
-  updateArusText();
-
-  kirimArus(0, 1);
-}
 
 
 function kirimArus(masuk, keluar){
