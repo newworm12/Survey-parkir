@@ -177,7 +177,7 @@ header .subtitle{
   margin-top:2px;
 }
 .flow-bar{
-  .flow-bar{
+
   display:flex;
   gap:10px;
   align-items:center;
@@ -198,6 +198,7 @@ header .subtitle{
   appearance:none;
   -webkit-appearance:none;
   -moz-appearance:none;
+  box-sizing:border-box;
 
   display:flex;
   align-items:center;
@@ -215,10 +216,12 @@ header .subtitle{
 /* tombol arus */
 .flow-btn{
   height:42px;
+  min-height:42px;
   display:flex;
   align-items:center;
   justify-content:center;
 }
+
 
 /* MASUK = ORANGE */
 .flow-btn.masuk{
@@ -411,6 +414,20 @@ function showApp(){
 
 
 <script>
+  let arusMasukCounter = {
+  SM: 0,
+  MP: 0,
+  KB: 0,
+  KTB: 0
+};
+
+let arusKeluarCounter = {
+  SM: 0,
+  MP: 0,
+  KB: 0,
+  KTB: 0
+};
+
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbxxmuULGgzuR7J-1hQ1FJLMuQPdGvmuMe5r5uPmxKI1XTW8hKAZmnnWmfbqs3-x56wY/exec";
 
 let aktif = JSON.parse(localStorage.getItem("parkirAktif")) || [];
