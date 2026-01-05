@@ -421,11 +421,13 @@ function showApp(){
 <div class="flow-bar">
   <div class="flow-select">
     <select id="flowJenis">
-      <option value="SM">SM</option>
-      <option value="MP">MP</option>
-      <option value="KB">KB</option>
-      <option value="KTB">KTB</option>
-    </select>
+    <option value="SM">SM</option>
+    <option value="MP">MP</option>
+    <option value="KB">KB</option>
+    <option value="KTB">KTB</option>
+    <option value="PK">PK</option>
+  </select>
+
   </div>
 
   <div class="flow-actions">
@@ -491,18 +493,20 @@ function showApp(){
 
 
 <script>
-  let arusMasukCounter = {
+let arusMasukCounter = {
   SM: 0,
   MP: 0,
   KB: 0,
-  KTB: 0
+  KTB: 0,
+  PK: 0
 };
 
 let arusKeluarCounter = {
   SM: 0,
   MP: 0,
   KB: 0,
-  KTB: 0
+  KTB: 0,
+  PK: 0
 };
 
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbxxmuULGgzuR7J-1hQ1FJLMuQPdGvmuMe5r5uPmxKI1XTW8hKAZmnnWmfbqs3-x56wY/exec";
@@ -645,11 +649,12 @@ render();
 
 function updateArusText(){
   document.getElementById("arusMasukText").innerText =
-    `SM ${arusMasukCounter.SM} | MP ${arusMasukCounter.MP} | KB ${arusMasukCounter.KB} | KTB ${arusMasukCounter.KTB}`;
+    `SM ${arusMasukCounter.SM} | MP ${arusMasukCounter.MP} | KB ${arusMasukCounter.KB} | KTB ${arusMasukCounter.KTB} | PK ${arusMasukCounter.PK}`;
 
   document.getElementById("arusKeluarText").innerText =
-    `SM ${arusKeluarCounter.SM} | MP ${arusKeluarCounter.MP} | KB ${arusKeluarCounter.KB} | KTB ${arusKeluarCounter.KTB}`;
+    `SM ${arusKeluarCounter.SM} | MP ${arusKeluarCounter.MP} | KB ${arusKeluarCounter.KB} | KTB ${arusKeluarCounter.KTB} | PK ${arusKeluarCounter.PK}`;
 }
+
 
 
 
