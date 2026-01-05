@@ -562,28 +562,9 @@ function resetData(){
 }
 
 
-  // reset parkir
-  aktif = [];
-  selesai = [];
-  idCounter = 1;
 
-  localStorage.removeItem("parkirAktif");
-  localStorage.removeItem("parkirSelesai");
-  localStorage.removeItem("parkirID");
-  arusMasukCounter  = { SM:0, MP:0, KB:0, KTB:0, PK:0 };
-  arusKeluarCounter = { SM:0, MP:0, KB:0, KTB:0, PK:0 };
+  
 
-localStorage.removeItem(ARUS_MASUK_KEY);
-localStorage.removeItem(ARUS_KELUAR_KEY);
-
-updateArusText();
-
-
-  // ⬇️ RESET ARUS JUGA
-  resetArus();
-
-  render();
-}
 
 
 function parkirMasuk(){
