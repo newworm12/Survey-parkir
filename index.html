@@ -177,8 +177,8 @@ header .subtitle{
   margin-top:2px;
 }
 .flow-bar{
-  display:grid;
-  grid-template-columns: 1fr auto auto;
+  .flow-bar{
+  display:flex;
   gap:10px;
   align-items:center;
   padding:12px;
@@ -188,9 +188,20 @@ header .subtitle{
 }
 
 /* dropdown */
+.flow-select{
+  flex:1;
+}
+
 .flow-select select{
-  height:42px;                 /* ⬅️ SAMA DENGAN TOMBOL */
-  line-height:42px;            /* ⬅️ PUSAT TEKS */
+  height:42px;
+  min-height:42px;
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+
+  display:flex;
+  align-items:center;
+
   background:#2b2b2b;
   color:#fff;
   border:1px solid #444;
@@ -200,14 +211,13 @@ header .subtitle{
 }
 
 
+
 /* tombol arus */
 .flow-btn{
   height:42px;
-  padding:0 16px;
-  border-radius:12px;
-  font-size:14px;
-  font-weight:700;
-  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 /* MASUK = ORANGE */
@@ -294,7 +304,7 @@ function askPin(){
 
 function showApp(){
   document.getElementById("app").style.display = "block";
-  initFlow(); // ⬅️ INI WAJIB
+  
 }
 
 
@@ -522,41 +532,7 @@ render();
   WEB created by N4yr4
 </div>
 <script>
-let flowCount;
 
-function initFlow(){
-  flowCount = JSON.parse(localStorage.getItem("flowCount")) || {
-    SM:0, MP:0, KB:0, KTB:0
-  };
-
-  window.smCount  = document.getElementById("smCount");
-  window.mpCount  = document.getElementById("mpCount");
-  window.kbCount  = document.getElementById("kbCount");
-  window.ktbCount = document.getElementById("ktbCount");
-
-  updateFlowUI();
-}
-
-function updateFlowUI(){
-  smCount.textContent  = flowCount.SM;
-  mpCount.textContent  = flowCount.MP;
-  kbCount.textContent  = flowCount.KB;
-  ktbCount.textContent = flowCount.KTB;
-  localStorage.setItem("flowCount", JSON.stringify(flowCount));
-}
-let arusMasukCounter = {
-  SM: 0,
-  MP: 0,
-  KB: 0,
-  KTB: 0
-};
-
-let arusKeluarCounter = {
-  SM: 0,
-  MP: 0,
-  KB: 0,
-  KTB: 0
-};
 
 
 function updateArusText(){
