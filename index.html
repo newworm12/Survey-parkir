@@ -575,16 +575,14 @@ function parkirKeluar(id){
   arus_keluar: 1
 };
 
-  fetch(SHEET_URL, {
+fetch(SHEET_URL, {
   method: "POST",
   mode: "no-cors",
   headers: {
     "Content-Type": "application/json"
   },
   body: JSON.stringify(payload)
-});
-
-    .catch(err => console.error("Gagal kirim ke Google Sheet", err));
+}).catch(err => console.error("Gagal kirim ke Google Sheet", err));
 
   selesai.push({...data, keluar, durasi});
   simpan();
@@ -650,16 +648,21 @@ function updateArusText(){
 function kirimArus(arah, status){
   fetch(SHEET_URL, {
     method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       mode: "ARUS",
       waktu: new Date().toLocaleString("id-ID"),
       jenis: document.getElementById("flowJenis").value,
-      arah: arah,           // MASUK / KELUAR
-      status: status,       // ADD / CANCEL
+      arah: arah,
+      status: status,
       surveyor: localStorage.getItem("namaSurveyor") || ""
     })
-  }).catch(err => console.error("Gagal kirim arus", err));
+  }).catch(()=>{});
 }
+
 
 
 
