@@ -527,18 +527,25 @@ function updateFlowUI(){
 }
 
 function countMasuk(){
-  if(!flowCount) initFlow();
-  const jenis = document.getElementById("flowJenis").value;
-  flowCount[jenis]++;
-  updateFlowUI();
+  kirimArus(1, 0);
 }
 
 function countKeluar(){
-  if(!flowCount) initFlow();
-  const jenis = document.getElementById("flowJenis").value;
-  flowCount[jenis] = Math.max(0, flowCount[jenis]-1);
-  updateFlowUI();
+  kirimArus(0, 1);
 }
+
+function kirimArus(masuk, keluar){
+  fetch(SHEET_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      mode: "ARUS",
+      waktu: new Date().toLocaleString("id-ID"),
+      masuk: masuk,
+      keluar: keluar
+    })
+  }).catch(err => console.error("Gagal kirim arus", err));
+}
+
 
 </script>
 
