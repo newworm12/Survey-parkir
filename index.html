@@ -529,12 +529,18 @@ function simpan(){
   localStorage.setItem("parkirSelesai", JSON.stringify(selesai));
   localStorage.setItem("parkirID", idCounter);
 }
+function resetArus(){
+  arusMasukCounter = { SM:0, MP:0, KB:0, KTB:0 };
+  arusKeluarCounter = { SM:0, MP:0, KB:0, KTB:0 };
+  updateArusText();
+}
 
 function resetData(){
-  if(!confirm("Yakin ingin reset SEMUA data parkir 🥺 ")){
+  if(!confirm("mau reset SEMUA data parkir & arus?")){
     return;
   }
 
+  // reset parkir
   aktif = [];
   selesai = [];
   idCounter = 1;
@@ -543,8 +549,12 @@ function resetData(){
   localStorage.removeItem("parkirSelesai");
   localStorage.removeItem("parkirID");
 
+  // ⬇️ RESET ARUS JUGA
+  resetArus();
+
   render();
 }
+
 
 function parkirMasuk(){
   aktif.push({
