@@ -576,9 +576,15 @@ function parkirKeluar(id){
 };
 
   fetch(SHEET_URL, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  }).catch(err => console.error("Gagal kirim ke Google Sheet", err));
+  method: "POST",
+  mode: "no-cors",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+});
+
+    .catch(err => console.error("Gagal kirim ke Google Sheet", err));
 
   selesai.push({...data, keluar, durasi});
   simpan();
