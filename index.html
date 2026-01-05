@@ -341,13 +341,21 @@ function showApp(){
   <button class="flow-btn keluar" onclick="countKeluar()">KELUAR</button>
 </div>
 
-<div id="arusText" style="
+<div id="arusWrapper" style="
+  display:flex;
+  justify-content:space-between;
   font-size:12px;
   color:#ccc;
   padding:4px 6px 10px;
 ">
-  SM 0 | MP 0 | KB 0 | KTB 0
+  <div id="arusMasukText">
+    SM 0 | MP 0 | KB 0 | KTB 0
+  </div>
+  <div id="arusKeluarText">
+    SM 0 | MP 0 | KB 0 | KTB 0
+  </div>
 </div>
+
 
 
 <div class="card">
@@ -531,22 +539,34 @@ function updateFlowUI(){
   ktbCount.textContent = flowCount.KTB;
   localStorage.setItem("flowCount", JSON.stringify(flowCount));
 }
-let arusCounter = {
+let arusMasukCounter = {
   SM: 0,
   MP: 0,
   KB: 0,
   KTB: 0
 };
 
+let arusKeluarCounter = {
+  SM: 0,
+  MP: 0,
+  KB: 0,
+  KTB: 0
+};
+
+
 function updateArusText(){
-  document.getElementById("arusText").innerText =
-    `SM ${arusCounter.SM} | MP ${arusCounter.MP} | KB ${arusCounter.KB} | KTB ${arusCounter.KTB}`;
+  document.getElementById("arusMasukText").innerText =
+    `SM ${arusMasukCounter.SM} | MP ${arusMasukCounter.MP} | KB ${arusMasukCounter.KB} | KTB ${arusMasukCounter.KTB}`;
+
+  document.getElementById("arusKeluarText").innerText =
+    `SM ${arusKeluarCounter.SM} | MP ${arusKeluarCounter.MP} | KB ${arusKeluarCounter.KB} | KTB ${arusKeluarCounter.KTB}`;
 }
+
 
 function countMasuk(){
   const jenis = document.getElementById("flowJenis").value;
 
-  arusCounter[jenis]++;
+  arusMasukCounter[jenis]++;
   updateArusText();
 
   kirimArus(1, 0);
@@ -554,8 +574,14 @@ function countMasuk(){
 
 
 function countKeluar(){
+  const jenis = document.getElementById("flowJenis").value;
+
+  arusKeluarCounter[jenis]++;
+  updateArusText();
+
   kirimArus(0, 1);
 }
+
 
 function kirimArus(masuk, keluar){
   fetch(SHEET_URL, {
