@@ -285,6 +285,7 @@ function askPin(){
 
 function showApp(){
   document.getElementById("app").style.display = "block";
+  initFlow(); // ⬅️ INI WAJIB
 }
 
 
@@ -441,13 +442,15 @@ function parkirKeluar(id){
   let durasi = Math.round((keluar - data.masuk)/60000);
 
   let payload = {
-    surveyor: localStorage.getItem("namaSurveyor") || "",
-    jenis: data.jenis,
-    ciri: data.plat || "",
-    masuk: new Date(data.masuk).toLocaleString("id-ID"),
-    keluar: keluar.toLocaleString("id-ID"),
-    durasi: durasi
-  };
+  surveyor: localStorage.getItem("namaSurveyor") || "",
+  jenis: data.jenis,
+  ciri: data.plat || "",
+  masuk: new Date(data.masuk).toLocaleString("id-ID"),
+  keluar: keluar.toLocaleString("id-ID"),
+  durasi: durasi,
+  arus_masuk: 1,
+  arus_keluar: 1
+};
 
   fetch(SHEET_URL, {
     method: "POST",
@@ -524,16 +527,19 @@ function updateFlowUI(){
 }
 
 function countMasuk(){
+  if(!flowCount) initFlow();
   const jenis = document.getElementById("flowJenis").value;
   flowCount[jenis]++;
   updateFlowUI();
 }
 
 function countKeluar(){
+  if(!flowCount) initFlow();
   const jenis = document.getElementById("flowJenis").value;
   flowCount[jenis] = Math.max(0, flowCount[jenis]-1);
   updateFlowUI();
 }
+
 </script>
 
 
