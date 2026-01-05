@@ -641,18 +641,20 @@ function updateArusText(){
 
 
 
-function kirimArus(arah, status){
+function kirimArus(masuk, keluar){
   fetch(SHEET_URL, {
     method: "POST",
     body: JSON.stringify({
       mode: "ARUS",
       waktu: new Date().toLocaleString("id-ID"),
       jenis: document.getElementById("flowJenis").value,
-      arah: arah,
-      status: status
+      arah: masuk === 1 ? "MASUK" : "KELUAR",
+      status: masuk === -1 || keluar === -1 ? "CANCEL" : "ADD",
+      surveyor: localStorage.getItem("namaSurveyor") || ""
     })
   }).catch(err => console.error("Gagal kirim arus", err));
 }
+
 
 
 </script>
