@@ -266,7 +266,7 @@ function hashPin(pin){
 const ACCESS_PIN = "111"; //GANTI PIN
 const LOGIN_KEY  = "parkir_login_hash";
 const TRY_KEY    = "parkir_pin_try";
-
+const ARUS_KL_KEY = "arusKL";
 const CURRENT_PIN_HASH = hashPin(ACCESS_PIN);
 const ARUS_MASUK_KEY  = "arusMasuk";
 const ARUS_KELUAR_KEY = "arusKeluar";
@@ -312,36 +312,13 @@ function vibrate(){
   }
 }
 document.addEventListener("DOMContentLoaded", () => {
-  const netStatus = document.getElementById("netStatus");
-
-  function updateNetworkStatus(){
-    if (!netStatus) return;
-
-    if (navigator.onLine) {
-      netStatus.style.display = "none";
-    } else {
-      netStatus.style.display = "block";
-    }
-  }
-
-  // cek awal
-  updateNetworkStatus();
-
-  window.addEventListener("online", () => {
-    updateNetworkStatus();
-    if (navigator.vibrate) navigator.vibrate(40);
-  });
-
-  window.addEventListener("offline", () => {
-    updateNetworkStatus();
-    if (navigator.vibrate) navigator.vibrate([100,50,100]);
-  });
-});
 
   const btnMasuk  = document.getElementById("btnMasuk");
   const btnKeluar = document.getElementById("btnKeluar");
   const btnKL     = document.getElementById("btnKL");
+  const netStatus = document.getElementById("netStatus");
 
+  // tombol MASUK / KELUAR
   if (btnMasuk && btnKeluar) {
     setupLongPress(
       btnMasuk,
@@ -355,18 +332,22 @@ document.addEventListener("DOMContentLoaded", () => {
       () => tambahArus("KELUAR", -1)
     );
   }
-
-  // ✅ INI YANG MEMPERBAIKI MASALAH
-  if (btnKL) {
-  setupLongPress(
-    btnKL,
-    () => tambahKL(+1),   // klik normal
-    () => tambahKL(-1)    // tekan lama
-  );
+if (localStorage.getItem(LOGIN_KEY) === CURRENT_PIN_HASH) {
+  showApp();
+} else {
+  askPin();
 }
 
-});
+  // tombol KL
+  if (btnKL) {
+    setupLongPress(
+      btnKL,
+      () => tambahKL(+1),
+      () => tambahKL(-1)
+    );
+  }
 
+});
 
 function kirimKendaraanLambat(status){
   fetch(SHEET_URL, {
@@ -569,7 +550,7 @@ function showApp(){
 
 
 <script>
-const ARUS_KL_KEY = "arusKL";
+
 
 const DEFAULT_ARUS = { SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0 };
 
@@ -603,13 +584,20 @@ let selesai = JSON.parse(localStorage.getItem("parkirSelesai")) || [];
 let idCounter = Number(localStorage.getItem("parkirID")) || 1;
 const surveyorInput = document.getElementById("surveyor");
 
-// load saat buka
-surveyorInput.value = localStorage.getItem("namaSurveyor") || "";
+if (surveyorInput) {
+  // load saat buka
+  surveyorInput.value =
+    localStorage.getItem("namaSurveyor") || "";
 
-// simpan saat diketik
-surveyorInput.addEventListener("input", () => {
-  localStorage.setItem("namaSurveyor", surveyorInput.value);
-});
+  // simpan saat diketik
+  surveyorInput.addEventListener("input", () => {
+    localStorage.setItem(
+      "namaSurveyor",
+      surveyorInput.value
+    );
+  });
+}
+
 
 function waktu(){
   return new Date().toLocaleTimeString("id-ID");
@@ -862,26 +850,24 @@ function kirimArus(arah, status){
 const netStatus = document.getElementById("netStatus");
 
 function updateNetworkStatus(){
-  if (navigator.onLine) {
-    netStatus.style.display = "none";
-  } else {
-    netStatus.style.display = "block";
-  }
+  netStatus.style.display = navigator.onLine ? "none" : "block";
 }
 
 // cek awal
 updateNetworkStatus();
 
-// event realtime
+// realtime
 window.addEventListener("online", () => {
-  netStatus.style.display = "none";
-  if (navigator.vibrate) navigator.vibrate(40);
+  updateNetworkStatus();
+  navigator.vibrate?.(40);
 });
 
 window.addEventListener("offline", () => {
-  netStatus.style.display = "block";
-  if (navigator.vibrate) navigator.vibrate([100,50,100]);
+  updateNetworkStatus();
+  navigator.vibrate?.([100,50,100]);
 });
+
+
 
 
 
