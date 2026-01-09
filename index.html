@@ -315,6 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const btnMasuk  = document.getElementById("btnMasuk");
   const btnKeluar = document.getElementById("btnKeluar");
+  const btnKL     = document.getElementById("btnKL");
 
   if (btnMasuk && btnKeluar) {
     setupLongPress(
@@ -329,13 +330,14 @@ document.addEventListener("DOMContentLoaded", () => {
       () => tambahArus("KELUAR", -1)
     );
   }
-}); // ✅ INI YANG KURANG
 
-const btnKL = document.getElementById("btnKL");
+  // ✅ INI YANG MEMPERBAIKI MASALAH
+  if (btnKL) {
+    btnKL.addEventListener("click", kirimKendaraanLambat);
+  }
+});
 
-if (btnKL) {
-  btnKL.addEventListener("click", kirimKendaraanLambat);
-}
+
 function kirimKendaraanLambat(){
   const jenis = document.getElementById("flowJenis").value;
   const ciri  = document.getElementById("plat").value || "";
