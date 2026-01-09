@@ -260,14 +260,17 @@ header .subtitle{
 
   <script>
 function hashPin(pin){
-  return btoa(pin); // cukup untuk invalidasi
+  return btoa(pin + "_salt");
 }
+
+
 </script>
 
 <script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyIp0gOox232fz1_7AzQSJGyGQutxitScJt-kA5zpXoIDwI3cvDnVCcp7GUNPVFanrb/exec";
 const ACCESS_PIN = "111"; //GANTI PIN
 const LOGIN_KEY  = "parkir_login_hash";
-const TRY_KEY    = "parkir_pin_try";
+
 const ARUS_KL_KEY = "arusKL";
 const CURRENT_PIN_HASH = hashPin(ACCESS_PIN);
 const ARUS_MASUK_KEY  = "arusMasuk";
@@ -307,6 +310,82 @@ function setupLongPress(button, onClick, onLongPress){
     }
   }
 }
+const QUEUE_KEY = "offlineQueue";
+let isFlushing = false;
+
+function queueData(payload){
+  const q = JSON.parse(localStorage.getItem(QUEUE_KEY)) || [];
+  q.push(payload);
+  localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+}
+
+function sendOrQueue(payload){
+  if (!navigator.onLine) {
+    queueData(payload);
+    return;
+  }
+
+  fetch(SHEET_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).catch(() => {
+    queueData(payload);
+  });
+}
+
+async function flushQueue(){
+  if (isFlushing) return;
+  isFlushing = true;
+
+  const q = JSON.parse(localStorage.getItem(QUEUE_KEY)) || [];
+  if (!q.length) {
+    isFlushing = false;
+    return;
+  }
+
+  const info = document.getElementById("syncInfo");
+  if (info) info.style.display = "block";
+
+  const sisa = [];
+
+  for (const payload of q) {
+  try {
+    await Promise.race([
+      fetch(SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(), 5000)
+      )
+    ]);
+  } catch {
+    sisa.push(payload);
+  }
+}
+
+
+  localStorage.setItem(QUEUE_KEY, JSON.stringify(sisa));
+
+  if (info) info.style.display = "none";
+  isFlushing = false;
+}
+
+
+
+
+window.addEventListener("online", () => {
+  if (document.readyState === "complete") {
+    flushQueue();
+  } else {
+    window.addEventListener("DOMContentLoaded", flushQueue, { once:true });
+  }
+});
+
 
 function vibrate(){
   if (navigator.vibrate) {
@@ -318,7 +397,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnMasuk  = document.getElementById("btnMasuk");
   const btnKeluar = document.getElementById("btnKeluar");
   const btnKL     = document.getElementById("btnKL");
-  const netStatus = document.getElementById("netStatus");
+  
 
   // tombol MASUK / KELUAR
   if (btnMasuk && btnKeluar) {
@@ -352,20 +431,15 @@ if (localStorage.getItem(LOGIN_KEY) === CURRENT_PIN_HASH) {
 });
 
 function kirimKendaraanLambat(status){
-  fetch(SHEET_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      mode: "KL",
-      waktu: new Date().toLocaleString("id-ID"),
-      surveyor: localStorage.getItem("namaSurveyor") || "",
-      jenis: document.getElementById("flowJenis").value,
-      ciri: document.getElementById("plat").value || "",
-      status: status   // ADD / CANCEL
-    })
+  sendOrQueue({
+    mode: "KL",
+    waktu: new Date().toLocaleString("id-ID"),
+    jenis: document.getElementById("flowJenis").value,
+    status,
+    surveyor: localStorage.getItem("namaSurveyor") || ""
   });
 }
+
 
 
 
@@ -396,18 +470,15 @@ function askPin(){
 
   if (input.trim() === ACCESS_PIN) {
     localStorage.setItem(LOGIN_KEY, CURRENT_PIN_HASH);
-    localStorage.removeItem(TRY_KEY);
     showApp();
     return;
   }
 
-  let tries = Number(localStorage.getItem(TRY_KEY)) || 0;
-  tries++;
-  localStorage.setItem(TRY_KEY, tries);
-
   alert("PIN salah");
-  askPin();
+  location.reload(); // ⬅️ PENTING
 }
+
+
 
 
 
@@ -579,7 +650,6 @@ simpanKL();
 
 
 
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbyIp0gOox232fz1_7AzQSJGyGQutxitScJt-kA5zpXoIDwI3cvDnVCcp7GUNPVFanrb/exec";
 
 let aktif = JSON.parse(localStorage.getItem("parkirAktif")) || [];
 let selesai = JSON.parse(localStorage.getItem("parkirSelesai")) || [];
@@ -693,30 +763,23 @@ function parkirKeluar(id){
   let keluar = new Date();
   let durasi = Math.round((keluar - data.masuk)/60000);
 
-  let payload = {
-  surveyor: localStorage.getItem("namaSurveyor") || "",
-  jenis: data.jenis,
-  ciri: data.plat || "",
-  masuk: new Date(data.masuk).toLocaleString("id-ID"),
-  keluar: keluar.toLocaleString("id-ID"),
-  durasi: durasi,
-  arus_masuk: 1,
-  arus_keluar: 1
-};
-
-fetch(SHEET_URL, {
-  method: "POST",
-  mode: "no-cors",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(payload)
-}).catch(err => console.error("Gagal kirim ke Google Sheet", err));
+  sendOrQueue({
+    mode: "PARKIR",
+    surveyor: localStorage.getItem("namaSurveyor") || "",
+    jenis: data.jenis,
+    ciri: data.plat || "",
+    masuk: new Date(data.masuk).toLocaleString("id-ID"),
+    keluar: keluar.toLocaleString("id-ID"),
+    durasi
+  });
 
   selesai.push({...data, keluar, durasi});
   simpan();
   render();
 }
+
+
+  
 
 function filterParkir(){
   const q = document.getElementById("searchInput").value
@@ -744,6 +807,8 @@ function filterParkir(){
 
   renderFiltered(hasil);
 }
+
+
 
 function render(){
   aktifEl.innerHTML = "";
@@ -833,42 +898,35 @@ function updateArusText(){
 
 
 function kirimArus(arah, status){
-  fetch(SHEET_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      mode: "ARUS",
-      waktu: new Date().toLocaleString("id-ID"),
-      jenis: document.getElementById("flowJenis").value,
-      arah: arah,
-      status: status,
-      surveyor: localStorage.getItem("namaSurveyor") || ""
-    })
-  }).catch(()=>{});
+  sendOrQueue({
+    mode: "ARUS",
+    waktu: new Date().toLocaleString("id-ID"),
+    jenis: document.getElementById("flowJenis").value,
+    arah,
+    status,
+    surveyor: localStorage.getItem("namaSurveyor") || ""
+  });
 }
 
 
-const netStatus = document.getElementById("netStatus");
 
-function updateNetworkStatus(){
-  netStatus.style.display = navigator.onLine ? "none" : "block";
-}
 
-// cek awal
-updateNetworkStatus();
 
-// realtime
-window.addEventListener("online", () => {
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const netStatus = document.getElementById("netStatus");
+
+  function updateNetworkStatus(){
+    netStatus.style.display = navigator.onLine ? "none" : "block";
+  }
+
   updateNetworkStatus();
-  navigator.vibrate?.(40);
-});
 
-window.addEventListener("offline", () => {
-  updateNetworkStatus();
-  navigator.vibrate?.([100,50,100]);
+  window.addEventListener("online", updateNetworkStatus);
+  window.addEventListener("offline", updateNetworkStatus);
 });
-
 
 
 
@@ -889,6 +947,17 @@ window.addEventListener("offline", () => {
   z-index:9999;
 ">
   ❌ Tidak ada koneksi internet
+</div>
+<div id="syncInfo" style="
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:11px;
+  color:#90caf9;
+  display:none;
+">
+  ⏳ Mengirim data tersimpan...
 </div>
 
 </body>
