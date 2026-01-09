@@ -598,10 +598,17 @@ function simpan(){
 function resetArus(){
   arusMasukCounter  = { SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0 };
   arusKeluarCounter = { SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0 };
+  arusKLCounter     = { SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0 };
+
+  localStorage.removeItem(ARUS_MASUK_KEY);
+  localStorage.removeItem(ARUS_KELUAR_KEY);
+  localStorage.removeItem(ARUS_KL_KEY);
 
   simpanArus();
+  simpanKL();
   updateArusText();
 }
+
 
 
 function simpanArus(){
