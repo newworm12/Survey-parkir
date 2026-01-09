@@ -283,15 +283,20 @@ function setupLongPress(button, onClick, onLongPress){
   button.addEventListener("touchcancel", end);
 
   function start(e){
+  // Check if the event is cancelable before preventing its default action.
+  // This helps avoid the browser intervention message.
+  if (e.cancelable) {
     e.preventDefault();
-    isLongPress = false;
-
-    pressTimer = setTimeout(() => {
-      isLongPress = true;
-      onLongPress();
-      vibrate();
-    }, LONG_PRESS_MS);
   }
+
+  isLongPress = false;
+
+  pressTimer = setTimeout(() => {
+    isLongPress = true;
+    onLongPress();
+    vibrate();
+  }, LONG_PRESS_MS);
+}
 
   function end(){
     clearTimeout(pressTimer);
