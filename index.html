@@ -452,6 +452,20 @@ function showApp(){
     SM 0 | MP 0 | KB 0 | KTB 0
   </div>
 </div>
+<div class="card">
+  <input
+    id="searchInput"
+    placeholder="Cari jenis / ciri / waktu masuk (contoh: SM, merah, 18.22)"
+    oninput="filterParkir()"
+    style="
+      background:#f5f5f5;
+      border:1px solid #ccc;
+      border-radius:12px;
+      height:44px;
+      font-size:14px;
+    "
+  >
+</div>
 
 
 
@@ -610,22 +624,87 @@ fetch(SHEET_URL, {
   render();
 }
 
+function filterParkir(){
+  const q = document.getElementById("searchInput").value
+    .toLowerCase()
+    .trim();
+
+  if(!q){
+    render();
+    return;
+  }
+
+  const hasil = aktif.filter(d => {
+    const jenis = d.jenis.toLowerCase();
+    const ciri  = (d.plat || "").toLowerCase();
+    const waktu = new Date(d.masuk)
+      .toLocaleTimeString("id-ID")
+      .toLowerCase();
+
+    return (
+      jenis.includes(q) ||
+      ciri.includes(q)  ||
+      waktu.includes(q)
+    );
+  });
+
+  renderFiltered(hasil);
+}
 
 function render(){
-  aktifEl.innerHTML="";
-  selesaiEl.innerHTML="";
+  aktifEl.innerHTML = "";
+  selesaiEl.innerHTML = "";
 
   aktif.forEach(d=>{
     aktifEl.innerHTML += `
       <tr>
         <td>${d.id}</td>
         <td>${d.jenis}</td>
-        <td>${d.plat||"-"}</td>
-        <td>${new Date(d.masuk).toLocaleTimeString("id-ID")
-}</td>
-        <td><button class="btn-out" onclick="parkirKeluar(${d.id})">Keluar</button></td>
-      </tr>`;
+        <td>${d.plat || "-"}</td>
+        <td>${new Date(d.masuk).toLocaleTimeString("id-ID")}</td>
+        <td>
+          <button class="btn-out" onclick="parkirKeluar(${d.id})">
+            Keluar
+          </button>
+        </td>
+      </tr>
+    `;
   });
+
+  selesai.forEach(d=>{
+    selesaiEl.innerHTML += `
+      <tr>
+        <td>${d.id}</td>
+        <td>${d.jenis}</td>
+        <td>${d.plat || "-"}</td>
+        <td>${new Date(d.masuk).toLocaleTimeString("id-ID")}</td>
+        <td>${new Date(d.keluar).toLocaleTimeString("id-ID")}</td>
+        <td>${d.durasi}</td>
+      </tr>
+    `;
+  });
+}
+
+function renderFiltered(data){
+  aktifEl.innerHTML = "";
+
+  data.forEach(d=>{
+    aktifEl.innerHTML += `
+      <tr>
+        <td>${d.id}</td>
+        <td>${d.jenis}</td>
+        <td>${d.plat || "-"}</td>
+        <td>${new Date(d.masuk).toLocaleTimeString("id-ID")}</td>
+        <td>
+          <button class="btn-out" onclick="parkirKeluar(${d.id})">
+            Keluar
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
 
   selesai.forEach(d=>{
     selesaiEl.innerHTML += `
