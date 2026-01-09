@@ -400,9 +400,12 @@ function showApp(){
   <select id="jenis">
   <option value="SM">SM – Sepeda Motor</option>
   <option value="MP">MP – Mobil Penumpang</option>
-  <option value="KB">KB – Kendaraan Besar</option>
+  <option value="KS">KS – Kendaraan Sedang</option>
+  <option value="BB">BB – Bus Besar</option>
+  <option value="TB">TB – Truk Besar</option>
   <option value="KTB">KTB – Kendaraan Tidak Bermotor</option>
 </select>
+
 
 
   <label>Ciri-ciri Kendaraan (opsional)</label>
@@ -417,12 +420,13 @@ function showApp(){
 <div class="flow-bar">
   <div class="flow-select">
     <select id="flowJenis">
-    <option value="SM">SM</option>
-    <option value="MP">MP</option>
-    <option value="KB">KB</option>
-    <option value="KTB">KTB</option>
-    <option value="PK">PK</option>
-  </select>
+  <option value="SM">SM</option>
+  <option value="MP">MP</option>
+  <option value="KS">KS</option>
+  <option value="BB">BB</option>
+  <option value="TB">TB</option>
+  <option value="KTB">KTB</option>
+</select>
 
   </div>
 
@@ -442,11 +446,12 @@ function showApp(){
   padding:4px 6px 10px;
 ">
   <div id="arusMasukText">
-    SM 0 | MP 0 | KB 0 | KTB 0
-  </div>
-  <div id="arusKeluarText">
-    SM 0 | MP 0 | KB 0 | KTB 0
-  </div>
+  SM 0 | MP 0 | KS 0 | BB 0 | TB 0 | KTB 0
+</div>
+<div id="arusKeluarText">
+  SM 0 | MP 0 | KS 0 | BB 0 | TB 0 | KTB 0
+</div>
+
 </div>
 <div class="card">
   <input
@@ -505,12 +510,12 @@ function showApp(){
 <script>
 let arusMasukCounter =
   JSON.parse(localStorage.getItem(ARUS_MASUK_KEY)) || {
-    SM: 0, MP: 0, KB: 0, KTB: 0, PK: 0
+    SM: 0, MP: 0, KS: 0, BB: 0, TB: 0, KTB: 0
   };
 
 let arusKeluarCounter =
   JSON.parse(localStorage.getItem(ARUS_KELUAR_KEY)) || {
-    SM: 0, MP: 0, KB: 0, KTB: 0, PK: 0
+    SM: 0, MP: 0, KS: 0, BB: 0, TB: 0, KTB: 0
   };
 
 
@@ -539,12 +544,13 @@ function simpan(){
   localStorage.setItem("parkirID", idCounter);
 }
 function resetArus(){
-  arusMasukCounter  = { SM:0, MP:0, KB:0, KTB:0, PK:0 };
-  arusKeluarCounter = { SM:0, MP:0, KB:0, KTB:0, PK:0 };
+  arusMasukCounter  = { SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0 };
+  arusKeluarCounter = { SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0 };
 
   simpanArus();
-  
+  updateArusText();
 }
+
 
 function simpanArus(){
   localStorage.setItem(ARUS_MASUK_KEY, JSON.stringify(arusMasukCounter));
@@ -720,10 +726,10 @@ render();
 
 function updateArusText(){
   document.getElementById("arusMasukText").innerText =
-    `SM ${arusMasukCounter.SM} | MP ${arusMasukCounter.MP} | KB ${arusMasukCounter.KB} | KTB ${arusMasukCounter.KTB} | PK ${arusMasukCounter.PK}`;
+    `SM ${arusMasukCounter.SM} | MP ${arusMasukCounter.MP} | KS ${arusMasukCounter.KS} | BB ${arusMasukCounter.BB} | TB ${arusMasukCounter.TB} | KTB ${arusMasukCounter.KTB}`;
 
   document.getElementById("arusKeluarText").innerText =
-    `SM ${arusKeluarCounter.SM} | MP ${arusKeluarCounter.MP} | KB ${arusKeluarCounter.KB} | KTB ${arusKeluarCounter.KTB} | PK ${arusKeluarCounter.PK}`;
+    `SM ${arusKeluarCounter.SM} | MP ${arusKeluarCounter.MP} | KS ${arusKeluarCounter.KS} | BB ${arusKeluarCounter.BB} | TB ${arusKeluarCounter.TB} | KTB ${arusKeluarCounter.KTB}`;
 }
 
 
