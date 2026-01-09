@@ -344,34 +344,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function kirimKendaraanLambat(){
-  const jenis = document.getElementById("flowJenis").value;
-  const ciri  = document.getElementById("plat").value || "";
-  const surveyor = localStorage.getItem("namaSurveyor") || "";
-
-  // validasi sederhana
-  if (!jenis) {
-    alert("Pilih jenis kendaraan lambat");
-    return;
-  }
-
   fetch(SHEET_URL, {
     method: "POST",
     mode: "no-cors",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       mode: "KL",
       waktu: new Date().toLocaleString("id-ID"),
-      jenis: jenis,
-      ciri: ciri,
-      surveyor: surveyor
+      jenis: document.getElementById("flowJenis").value,
+      ciri: document.getElementById("plat").value || "",
+      surveyor: localStorage.getItem("namaSurveyor") || ""
     })
   });
-
-  // feedback cepat ke surveyor
-  if (navigator.vibrate) navigator.vibrate(60);
 }
+
+
+
 
 
 
@@ -555,27 +543,30 @@ function showApp(){
 
 
 <script>
+const ARUS_KL_KEY = "arusKL";
+
+const DEFAULT_ARUS = { SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0 };
+
 let arusMasukCounter =
-  JSON.parse(localStorage.getItem(ARUS_MASUK_KEY)) || {
-    SM: 0, MP: 0, KS: 0, BB: 0, TB: 0, KTB: 0
-  };
+  JSON.parse(localStorage.getItem(ARUS_MASUK_KEY)) || {};
 
 let arusKeluarCounter =
-  JSON.parse(localStorage.getItem(ARUS_KELUAR_KEY)) || {
-    SM: 0, MP: 0, KS: 0, BB: 0, TB: 0, KTB: 0
-  };
-const DEFAULT_ARUS = { SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0 };
-arusKLCounter = { ...DEFAULT_ARUS, ...arusKLCounter };
-simpanKL();
+  JSON.parse(localStorage.getItem(ARUS_KELUAR_KEY)) || {};
 
+let arusKLCounter =
+  JSON.parse(localStorage.getItem(ARUS_KL_KEY)) || {};
+
+// normalisasi
 arusMasukCounter  = { ...DEFAULT_ARUS, ...arusMasukCounter };
 arusKeluarCounter = { ...DEFAULT_ARUS, ...arusKeluarCounter };
-const ARUS_KL_KEY = "arusKL";
-let arusKLCounter = JSON.parse(localStorage.getItem(ARUS_KL_KEY)) || {
-  SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0
-};
+arusKLCounter     = { ...DEFAULT_ARUS, ...arusKLCounter };
 
 simpanArus();
+simpanKL();
+
+
+
+
 
 
 
@@ -644,16 +635,18 @@ function resetData(){
 function tambahKL(nilai){
   const jenis = document.getElementById("flowJenis").value;
 
-  arusKLCounter[jenis] = Math.max(0, arusKLCounter[jenis] + nilai);
+  arusKLCounter[jenis] =
+    Math.max(0, arusKLCounter[jenis] + nilai);
 
   simpanKL();
   updateArusText();
 
-  // kirim ke sheet hanya kalau +1
+  // hanya kirim ke sheet kalau +1
   if (nilai > 0) {
     kirimKendaraanLambat();
   }
 }
+
 
   
 
@@ -820,9 +813,7 @@ function kirimArus(arah, status){
   fetch(SHEET_URL, {
     method: "POST",
     mode: "no-cors",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       mode: "ARUS",
       waktu: new Date().toLocaleString("id-ID"),
