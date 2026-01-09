@@ -312,11 +312,31 @@ function vibrate(){
   }
 }
 document.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem(LOGIN_KEY) === CURRENT_PIN_HASH) {
-    showApp();
-  } else {
-    askPin();
+  const netStatus = document.getElementById("netStatus");
+
+  function updateNetworkStatus(){
+    if (!netStatus) return;
+
+    if (navigator.onLine) {
+      netStatus.style.display = "none";
+    } else {
+      netStatus.style.display = "block";
+    }
   }
+
+  // cek awal
+  updateNetworkStatus();
+
+  window.addEventListener("online", () => {
+    updateNetworkStatus();
+    if (navigator.vibrate) navigator.vibrate(40);
+  });
+
+  window.addEventListener("offline", () => {
+    updateNetworkStatus();
+    if (navigator.vibrate) navigator.vibrate([100,50,100]);
+  });
+});
 
   const btnMasuk  = document.getElementById("btnMasuk");
   const btnKeluar = document.getElementById("btnKeluar");
@@ -839,11 +859,49 @@ function kirimArus(arah, status){
 }
 
 
+const netStatus = document.getElementById("netStatus");
+
+function updateNetworkStatus(){
+  if (navigator.onLine) {
+    netStatus.style.display = "none";
+  } else {
+    netStatus.style.display = "block";
+  }
+}
+
+// cek awal
+updateNetworkStatus();
+
+// event realtime
+window.addEventListener("online", () => {
+  netStatus.style.display = "none";
+  if (navigator.vibrate) navigator.vibrate(40);
+});
+
+window.addEventListener("offline", () => {
+  netStatus.style.display = "block";
+  if (navigator.vibrate) navigator.vibrate([100,50,100]);
+});
 
 
 
 </script>
 
+<div id="netStatus" style="
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#e53935;
+  color:#fff;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  display:none;
+  z-index:9999;
+">
+  ❌ Tidak ada koneksi internet
+</div>
 
 </body>
 </html>
