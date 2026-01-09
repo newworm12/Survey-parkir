@@ -313,6 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnMasuk  = document.getElementById("btnMasuk");
   const btnKeluar = document.getElementById("btnKeluar");
 
+if (btnMasuk && btnKeluar) {
   setupLongPress(
     btnMasuk,
     () => tambahArus("MASUK", +1),
@@ -324,8 +325,11 @@ document.addEventListener("DOMContentLoaded", () => {
     () => tambahArus("KELUAR", +1),
     () => tambahArus("KELUAR", -1)
   );
-  updateArusText();
-});
+}
+
+
+
+
 
 function tambahArus(arah, nilai){
   const jenis = document.getElementById("flowJenis").value;
@@ -336,7 +340,7 @@ function tambahArus(arah, nilai){
     arusKeluarCounter[jenis] = Math.max(0, arusKeluarCounter[jenis] + nilai);
   }
 
-  updateArusText();
+  
   simpanArus();
 
   kirimArus(arah, nilai > 0 ? "ADD" : "CANCEL");
@@ -380,7 +384,7 @@ function askPin(){
 
 function showApp(){
   document.getElementById("app").style.display = "block";
-  
+  updateArusText(); // ✅ SATU-SATUNYA TEMPAT BOLEH PANGGIL
 }
 
 
@@ -547,7 +551,7 @@ function resetArus(){
   arusKeluarCounter = { SM:0, MP:0, KB:0, KTB:0, PK:0 };
 
   simpanArus();
-  updateArusText();
+  
 }
 
 function simpanArus(){
@@ -706,18 +710,7 @@ function renderFiltered(data){
 }
 
 
-  selesai.forEach(d=>{
-    selesaiEl.innerHTML += `
-      <tr>
-        <td>${d.id}</td>
-        <td>${d.jenis}</td>
-        <td>${d.plat||"-"}</td>
-        <td>${new Date(d.masuk).toLocaleTimeString("id-ID")}</td>
-        <td>${new Date(d.keluar).toLocaleTimeString("id-ID")}</td>
-        <td>${d.durasi}</td>
-      </tr>`;
-  });
-}
+  
 
 const aktifEl = document.getElementById("aktif");
 const selesaiEl = document.getElementById("selesai");
