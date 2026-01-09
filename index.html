@@ -343,7 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-function kirimKendaraanLambat(){
+function kirimKendaraanLambat(status){
   fetch(SHEET_URL, {
     method: "POST",
     mode: "no-cors",
@@ -351,9 +351,10 @@ function kirimKendaraanLambat(){
     body: JSON.stringify({
       mode: "KL",
       waktu: new Date().toLocaleString("id-ID"),
+      surveyor: localStorage.getItem("namaSurveyor") || "",
       jenis: document.getElementById("flowJenis").value,
       ciri: document.getElementById("plat").value || "",
-      surveyor: localStorage.getItem("namaSurveyor") || ""
+      status: status   // ADD / CANCEL
     })
   });
 }
@@ -641,10 +642,10 @@ function tambahKL(nilai){
   simpanKL();
   updateArusText();
 
-  // hanya kirim ke sheet kalau +1
-  if (nilai > 0) {
-    kirimKendaraanLambat();
-  }
+  // kirim ke sheet (ADD / CANCEL)
+  kirimKendaraanLambat(
+    nilai > 0 ? "ADD" : "CANCEL"
+  );
 }
 
 
