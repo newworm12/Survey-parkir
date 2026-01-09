@@ -333,8 +333,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ INI YANG MEMPERBAIKI MASALAH
   if (btnKL) {
-    btnKL.addEventListener("click", kirimKendaraanLambat);
-  }
+  setupLongPress(
+    btnKL,
+    () => tambahKL(+1),   // klik normal
+    () => tambahKL(-1)    // tekan lama
+  );
+}
+
 });
 
 
@@ -485,11 +490,13 @@ function showApp(){
   color:#ccc;
   padding:4px 6px 10px;
 ">
-  <div id="arusMasukText">
-  SM 0 | MP 0 | KS 0 | BB 0 | TB 0 | KTB 0
-</div>
-<div id="arusKeluarText">
-  SM 0 | MP 0 | KS 0 | BB 0 | TB 0 | KTB 0
+  <div id="arusMasukText"></div>
+
+  <div id="arusKLText" style="text-align:center;color:#90caf9">
+    KL: SM 0 | MP 0 | KS 0 | BB 0 | TB 0 | KTB 0
+  </div>
+
+  <div id="arusKeluarText"></div>
 </div>
 
 </div>
@@ -558,11 +565,18 @@ let arusKeluarCounter =
     SM: 0, MP: 0, KS: 0, BB: 0, TB: 0, KTB: 0
   };
 const DEFAULT_ARUS = { SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0 };
+arusKLCounter = { ...DEFAULT_ARUS, ...arusKLCounter };
+simpanKL();
 
 arusMasukCounter  = { ...DEFAULT_ARUS, ...arusMasukCounter };
 arusKeluarCounter = { ...DEFAULT_ARUS, ...arusKeluarCounter };
+const ARUS_KL_KEY = "arusKL";
+let arusKLCounter = JSON.parse(localStorage.getItem(ARUS_KL_KEY)) || {
+  SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0
+};
 
 simpanArus();
+
 
 
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbyIp0gOox232fz1_7AzQSJGyGQutxitScJt-kA5zpXoIDwI3cvDnVCcp7GUNPVFanrb/exec";
@@ -602,6 +616,9 @@ function simpanArus(){
   localStorage.setItem(ARUS_MASUK_KEY, JSON.stringify(arusMasukCounter));
   localStorage.setItem(ARUS_KELUAR_KEY, JSON.stringify(arusKeluarCounter));
 }
+function simpanKL(){
+  localStorage.setItem(ARUS_KL_KEY, JSON.stringify(arusKLCounter));
+}
 
 function resetData(){
   if(!confirm("mau reset SEMUA data parkir & arus?")){
@@ -624,6 +641,19 @@ function resetData(){
 }
 
 
+function tambahKL(nilai){
+  const jenis = document.getElementById("flowJenis").value;
+
+  arusKLCounter[jenis] = Math.max(0, arusKLCounter[jenis] + nilai);
+
+  simpanKL();
+  updateArusText();
+
+  // kirim ke sheet hanya kalau +1
+  if (nilai > 0) {
+    kirimKendaraanLambat();
+  }
+}
 
   
 
@@ -772,10 +802,13 @@ render();
 
 function updateArusText(){
   document.getElementById("arusMasukText").innerText =
-    `SM ${arusMasukCounter.SM} | MP ${arusMasukCounter.MP} | KS ${arusMasukCounter.KS} | BB ${arusMasukCounter.BB} | TB ${arusMasukCounter.TB} | KTB ${arusMasukCounter.KTB}`;
+    `MASUK → SM ${arusMasukCounter.SM} | MP ${arusMasukCounter.MP} | KS ${arusMasukCounter.KS} | BB ${arusMasukCounter.BB} | TB ${arusMasukCounter.TB} | KTB ${arusMasukCounter.KTB}`;
+
+  document.getElementById("arusKLText").innerText =
+    `KL → SM ${arusKLCounter.SM} | MP ${arusKLCounter.MP} | KS ${arusKLCounter.KS} | BB ${arusKLCounter.BB} | TB ${arusKLCounter.TB} | KTB ${arusKLCounter.KTB}`;
 
   document.getElementById("arusKeluarText").innerText =
-    `SM ${arusKeluarCounter.SM} | MP ${arusKeluarCounter.MP} | KS ${arusKeluarCounter.KS} | BB ${arusKeluarCounter.BB} | TB ${arusKeluarCounter.TB} | KTB ${arusKeluarCounter.KTB}`;
+    `KELUAR → SM ${arusKeluarCounter.SM} | MP ${arusKeluarCounter.MP} | KS ${arusKeluarCounter.KS} | BB ${arusKeluarCounter.BB} | TB ${arusKeluarCounter.TB} | KTB ${arusKeluarCounter.KTB}`;
 }
 
 
