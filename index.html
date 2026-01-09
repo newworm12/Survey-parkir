@@ -352,9 +352,7 @@ function askPin(){
   const input = prompt("Masukkan PIN Akses");
   if (input === null) return;
 
-  const pin = input.trim();
-
-  if (pin === ACCESS_PIN) {
+  if (input.trim() === ACCESS_PIN) {
     localStorage.setItem(LOGIN_KEY, CURRENT_PIN_HASH);
     localStorage.removeItem(TRY_KEY);
     showApp();
@@ -367,12 +365,9 @@ function askPin(){
 
   alert("PIN salah");
   askPin();
-} // ✅ askPin SELESAI DI SINI
-
-function showApp(){   // ✅ SEKARANG GLOBAL
-  document.getElementById("app").style.display = "block";
-  updateArusText();
 }
+
+
 
   
 function showApp(){
@@ -381,25 +376,7 @@ function showApp(){
 }
 
 
-  let tries = Number(localStorage.getItem(TRY_KEY)) || 0;
-  tries++;
-  localStorage.setItem(TRY_KEY, tries);
 
-  let msg = "pin anda salah 😇";
-  if (tries === 2) msg = "masih salah☺️";
-  else if (tries === 3) msg = "PIN SALAH 🙂";
-  else if (tries === 4) msg = "PIN MASIH SALAH ☹️";
-  else if (tries === 5) msg = "BISA NULIS G SIH! 😒";
-  else if (tries === 6) msg = "TANYA ORANG COBA 🫩";
-  else if (tries === 7) msg = "UDAH NANYA BELUM ? 😑";
-  else if (tries === 8) msg = "BISA GAKK !! ";
-  else if (tries === 9) msg = "NYERAH AJA G SIH";
-  else if (tries >= 10) msg = "😑";
-
-
-  alert(msg);
-  askPin();
-}
 
 
 
