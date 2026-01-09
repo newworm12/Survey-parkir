@@ -517,6 +517,12 @@ let arusKeluarCounter =
   JSON.parse(localStorage.getItem(ARUS_KELUAR_KEY)) || {
     SM: 0, MP: 0, KS: 0, BB: 0, TB: 0, KTB: 0
   };
+const DEFAULT_ARUS = { SM:0, MP:0, KS:0, BB:0, TB:0, KTB:0 };
+
+arusMasukCounter  = { ...DEFAULT_ARUS, ...arusMasukCounter };
+arusKeluarCounter = { ...DEFAULT_ARUS, ...arusKeluarCounter };
+
+simpanArus();
 
 
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbxxmuULGgzuR7J-1hQ1FJLMuQPdGvmuMe5r5uPmxKI1XTW8hKAZmnnWmfbqs3-x56wY/exec";
