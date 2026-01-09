@@ -341,8 +341,8 @@ function tambahArus(arah, nilai){
     arusKeluarCounter[jenis] = Math.max(0, arusKeluarCounter[jenis] + nilai);
   }
 
-  
   simpanArus();
+  updateArusText();   // ⬅️ INI YANG KURANG
 
   kirimArus(arah, nilai > 0 ? "ADD" : "CANCEL");
 }
