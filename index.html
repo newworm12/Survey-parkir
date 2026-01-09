@@ -301,6 +301,7 @@ function vibrate(){
   if (navigator.vibrate) {
     navigator.vibrate(40);
   }
+}
 document.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem(LOGIN_KEY) === CURRENT_PIN_HASH) {
     showApp();
@@ -359,7 +360,25 @@ function askPin(){
     showApp();
     return;
   }
+
+  let tries = Number(localStorage.getItem(TRY_KEY)) || 0;
+  tries++;
+  localStorage.setItem(TRY_KEY, tries);
+
+  alert("PIN salah");
+  askPin();
+} // ✅ askPin SELESAI DI SINI
+
+function showApp(){   // ✅ SEKARANG GLOBAL
+  document.getElementById("app").style.display = "block";
+  updateArusText();
+}
+
   
+function showApp(){
+  document.getElementById("app").style.display = "block";
+  updateArusText(); // ✅ SATU-SATUNYA TEMPAT BOLEH PANGGIL
+}
 
 
   let tries = Number(localStorage.getItem(TRY_KEY)) || 0;
@@ -382,10 +401,6 @@ function askPin(){
   askPin();
 }
 
-function showApp(){
-  document.getElementById("app").style.display = "block";
-  updateArusText(); // ✅ SATU-SATUNYA TEMPAT BOLEH PANGGIL
-}
 
 
   
