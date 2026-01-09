@@ -234,6 +234,10 @@ header .subtitle{
   background:#e53935;
 }
 
+.flow-btn.kl{
+  background:#607d8b;
+  color:#fff;
+}
 
 .flow-result{
   display:flex;
@@ -327,6 +331,40 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 }); // ✅ INI YANG KURANG
 
+const btnKL = document.getElementById("btnKL");
+
+if (btnKL) {
+  btnKL.addEventListener("click", kirimKendaraanLambat);
+}
+function kirimKendaraanLambat(){
+  const jenis = document.getElementById("flowJenis").value;
+  const ciri  = document.getElementById("plat").value || "";
+  const surveyor = localStorage.getItem("namaSurveyor") || "";
+
+  // validasi sederhana
+  if (!jenis) {
+    alert("Pilih jenis kendaraan lambat");
+    return;
+  }
+
+  fetch(SHEET_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      mode: "KL",
+      waktu: new Date().toLocaleString("id-ID"),
+      jenis: jenis,
+      ciri: ciri,
+      surveyor: surveyor
+    })
+  });
+
+  // feedback cepat ke surveyor
+  if (navigator.vibrate) navigator.vibrate(60);
+}
 
 
 
@@ -430,11 +468,11 @@ function showApp(){
 
   </div>
 
-  <div class="flow-actions">
-    <button class="flow-btn masuk" id="btnMasuk">MASUK</button>
-    <button class="flow-btn keluar" id="btnKeluar">KELUAR</button>
-
-  </div>
+ <div class="flow-actions">
+  <button class="flow-btn masuk" id="btnMasuk">MASUK</button>
+  <button class="flow-btn keluar" id="btnKeluar">KELUAR</button>
+  <button class="flow-btn kl" id="btnKL">KL</button>
+</div>
 </div>
 
 
