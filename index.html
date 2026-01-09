@@ -301,8 +301,6 @@ function vibrate(){
   if (navigator.vibrate) {
     navigator.vibrate(40);
   }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem(LOGIN_KEY) === CURRENT_PIN_HASH) {
     showApp();
@@ -313,19 +311,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnMasuk  = document.getElementById("btnMasuk");
   const btnKeluar = document.getElementById("btnKeluar");
 
-if (btnMasuk && btnKeluar) {
-  setupLongPress(
-    btnMasuk,
-    () => tambahArus("MASUK", +1),
-    () => tambahArus("MASUK", -1)
-  );
+  if (btnMasuk && btnKeluar) {
+    setupLongPress(
+      btnMasuk,
+      () => tambahArus("MASUK", +1),
+      () => tambahArus("MASUK", -1)
+    );
 
-  setupLongPress(
-    btnKeluar,
-    () => tambahArus("KELUAR", +1),
-    () => tambahArus("KELUAR", -1)
-  );
-}
+    setupLongPress(
+      btnKeluar,
+      () => tambahArus("KELUAR", +1),
+      () => tambahArus("KELUAR", -1)
+    );
+  }
+}); // ✅ INI YANG KURANG
+
 
 
 
